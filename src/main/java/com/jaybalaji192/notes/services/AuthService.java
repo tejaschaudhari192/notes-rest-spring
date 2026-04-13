@@ -11,32 +11,34 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    @Autowired
+    
     private final UserRepository userRepository;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtUtil jwtUtil;
-
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public AuthService(UserRepository userRepository){
+    public AuthService(UserRepository userRepository, AuthenticationManager authenticationManager, JwtUtil jwtUtil){
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
-    public User addUser(AuthRequest request){
+    public boolean isUsernameTaken(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
+
+    public void register(AuthRequest request){
         User user = new User(
                 request.username(),
                 request.password()
         );
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public String login(AuthRequest request){
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(),request.password())
+                new UsernamePasswordAuthenticationToken(request.username(), request.password())
         );
-        String token = jwtUtil.generateToken(request.username());
-        return token;
+        return jwtUtil.generateToken(request.username());
     }
 }
