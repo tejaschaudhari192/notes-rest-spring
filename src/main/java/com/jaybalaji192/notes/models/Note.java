@@ -11,10 +11,13 @@ public class Note {
     private String title;
     private String content;
 
+    private String username;
+
     public Note() {
     }
 
-    public Note(String title, String content) {
+    public Note(String username, String title, String content) {
+        this.username = username;
         this.title = title;
         this.content = content;
     }
@@ -23,13 +26,17 @@ public class Note {
         return id;
     }
 
-    public void updateNote(Note note,String title, String content){
+    public void updateNote(Note note, String title, String content) {
         this.title = title;
         this.content = content;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getContent() {

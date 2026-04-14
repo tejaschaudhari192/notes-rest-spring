@@ -6,7 +6,9 @@ import com.jaybalaji192.notes.requests.NoteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NoteService {
@@ -18,28 +20,41 @@ public class NoteService {
         this.noteRepository = noteRepository;
     }
 
-    public Note addNote(NoteRequest request){
+    public Note addNote(NoteRequest request, Principal principal) {
         Note note = new Note(
+                principal.getName(),
                 request.title(),
                 request.content()
         );
         return noteRepository.save(note);
     }
 
-    public String deleteNote(String id){
-        System.out.println("deleting "+id);
-        noteRepository.deleteById(id);
-        return "Deleted Successfully";
+    public void deleteNote(String id, Principal principal) {
+        Optional<Note> optionalNote = noteRepository.findById(id);
+        if (optionalNote.isPresent()) {
+            Note note = optionalNote.get();
+            if (note.getUsername().equals(principal.getName())) {
+                noteRepository.deleteById(id);
+            } else {
+                throw new IllegalStateException("Not Your Note");
+            }
+        } else {
+            throw new IllegalArgumentException("Note not Found");
+        }
     }
 
-    public Note updateNote(String id, NoteRequest request){
-        Note note = noteRepository.findById(id).orElseThrow(() -> new RuntimeException("Note not found with id: "+id));
-        note.updateNote(note,request.title(),request.content());
+    public Note updateNote(String id, NoteRequest request, Principal principal) {
+        Note note = noteRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Note not found with id: " + id));
+        if (!note.getUsername().equals(principal.getName())) {
+            throw new IllegalStateException("Not Your Note");
+        }
+        note.updateNote(note, request.title(), request.content());
         return noteRepository.save(note);
     }
 
 
-    public List<Note> getAllNotes(){
-        return noteRepository.findAll();
+    public List<Note> getAllNotes(Principal principal) {
+        String username = principal.getName();
+        return noteRepository.findByUsername(username);
     }
 }
