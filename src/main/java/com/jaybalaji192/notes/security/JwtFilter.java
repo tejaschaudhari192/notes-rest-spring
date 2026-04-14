@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            System.out.println("wrong token");
+            System.out.println(e);
         }
         filterChain.doFilter(request, response);
     }
