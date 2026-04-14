@@ -22,24 +22,13 @@ public class Note {
         this.content = content;
     }
 
-    public String getId() {
-        return id;
-    }
 
     public void updateNote(String title, String content) {
         this.title = title;
         this.content = content;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public String getContent() {
-        return content;
     }
 }
