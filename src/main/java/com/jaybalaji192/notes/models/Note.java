@@ -26,7 +26,7 @@ public class Note {
         return id;
     }
 
-    public void updateNote(Note note, String title, String content) {
+    public void updateNote(String title, String content) {
         this.title = title;
         this.content = content;
     }

@@ -48,7 +48,7 @@ public class NoteService {
         if (!note.getUsername().equals(principal.getName())) {
             throw new IllegalStateException("Not Your Note");
         }
-        note.updateNote(note, request.title(), request.content());
+        note.updateNote(request.title(), request.content());
         return noteRepository.save(note);
     }
 
