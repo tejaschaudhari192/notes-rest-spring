@@ -28,6 +28,10 @@ public class Note {
         this.content = content;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     public String getUsername() {
         return username;
     }

@@ -2,6 +2,8 @@ package com.jaybalaji192.notes.controllers;
 
 import com.jaybalaji192.notes.requests.AuthRequest;
 import com.jaybalaji192.notes.services.AuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
 
     @Autowired
@@ -25,11 +28,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody AuthRequest request){
+        
         if (authService.isUsernameTaken(request.username())){
+            logger.warn("Registration failed. Username already in use: {}", request.username());
             return ResponseEntity.badRequest().body("Username is already in use");
         }
         
         authService.register(request);
+        logger.info("User registered successfully: {}", request.username());
         return ResponseEntity.ok("Registration Successful");
     }
 
@@ -38,9 +44,11 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         try {
             String token = authService.login(request);
+            logger.info("Login successful for user: {}", request.username());
             response.put("token", token);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            logger.error("Login failed for user: {}", request.username(), e);
             response.put("error", "Invalid username or password");
             return ResponseEntity.status(401).body(response);
         }
